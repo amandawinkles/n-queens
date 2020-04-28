@@ -80,21 +80,71 @@ window.countNRooksSolutions = function(n) {
 
   // generate solutions until all possible solutions have been found:
   while (solutionCount < numUniqueSolutions) {
-    // (1) generate a solution
+    // (1) generate a solution matrix
     let oneSolution = findNRooksSolution(n);
     let oneSolutionVariants = [];
 
-    // (1a) perform symmetry operations (reflection, rotation) to create solution variants
+
+    // perform symmetry operations (reflection, rotation) to create solution variants
     // rotation: 0˚, 90˚, 180˚, 270˚ and 1 reflection for each rotation (8 variants per solution)
-    // recursion...
-    // (1b) insert 0˚ rotation
-    // (1c) insert reflection
-    // (1d) insert 90˚ rotation
-    // (1e) insert reflection
-    // (1b) insert 180˚ rotation
-    // (1c) insert reflection
-    // (1d) insert 270˚ rotation
-    // (1e) insert reflection
+    // rotation(90˚) = top row becomes end column
+    // reflection = top row becomes bottom row
+    let reflection = [];
+    let rotation = [];
+    let symmetryCount = 0;
+
+    // build out rotation matrix
+    for (let i = 0; i < oneSolution.length; i++) {
+      rotation.push([]);
+      for (let j = 0; j < oneSolution.length; j++) {
+        rotation[i].push(0);
+      }
+    }
+
+
+
+    // rotate matrix by 90˚
+    let rotationOperation = function (matrix) {
+      // make a 90˚ rotation on matrix and add to collection of variants
+      for (let j = 0; j < matrix.length; j++) {
+        for (let k = 0; k < matrix[j].length; k++) {
+          rotation[k][matrix.length - (j + 1)] = matrix[j][k];
+        }
+      }
+      oneSolutionVariants.push(JSON.stringify(rotation));
+
+      reflectionOperation(rotation);
+
+      symmetryCount++;
+
+      if (symmetryCount < 3) {
+        rotationOperation(rotation);
+      } else {
+        return;
+      }
+    };
+
+    // reflect matrix
+    let reflectionOperation = function (matrix) {
+      // reflect matrix and add to collection of variants
+      for (let i = matrix.length - 1; i >= 0; i--) {
+        reflection.push(matrix[i]);
+      }
+      oneSolutionVariants.push(JSON.stringify(reflection));
+
+      // reset reflection matrix
+      reflection = [];
+    };
+
+    // add 0˚ rotation to collection of variants
+    oneSolutionVariants.push(JSON.stringify(oneSolution));
+
+    // reflect 0˚ rotation and to collection of variants
+    reflectionOperation(oneSolution);
+
+    // make rotation and reflection variants on original matrix
+    rotationOperation(oneSolution);
+
 
     // (2) determine if solution has already been generated:
     let isUnique = true; // trigger to stop comparisons
@@ -116,6 +166,7 @@ window.countNRooksSolutions = function(n) {
       }
     }
 
+
     // (3) if solution is unique:
     if (isUnique) {
       // add to collection of unique solutions
@@ -123,6 +174,7 @@ window.countNRooksSolutions = function(n) {
       // increment counter of unique solutions
       solutionCount++;
     }
+
   }
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
