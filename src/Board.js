@@ -113,10 +113,9 @@
     // test if a specific column on this board contains a conflict
     hasColConflictAt: function(colIndex) {
       var col = [];
-      for (let i = 0; i < this.row().length; i++) {
+      for (let i = 0; i < this.rows().length; i++) {
         col.push(this.get(i)[colIndex]);
       }
-      //console.log(col);
       col.sort().reverse();
       if (col[1]) {
         return true;
