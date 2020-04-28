@@ -139,15 +139,17 @@
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
       // get number of rows/cols for this board
-      let numRowsCols = this.get('n');
+      let numRows = this.get('n');
+      let numCols = numRows;
 
       // sum values across a major diagonal
       let majorIndex = majorDiagonalColumnIndexAtFirstRow; // majorIndex = col_index - row_index
       let sum = 0;
       // rows = index 'i'; cols = index 'j'
-      for (let i = 0; i < numRowsCols; i++) {
-        for (let j = 0; j < numRowsCols; j++) {
+      for (let i = 0; i < numRows; i++) {
+        for (let j = 0; j < numCols; j++) {
           if (j - i === majorIndex) {
+            // get(n) returns an array of length n representing the nth row
             sum += this.get(i)[j];
           }
         }
