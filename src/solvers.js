@@ -51,134 +51,52 @@ window.findNRooksSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  // number of unique solutions for 1 <= n <= 9: 1, 1, 2, 6, 24, 120, 720, 5040, 40320
-  // e.g., for n = 3: [1, 0, 0]  [1, 0, 0]
-  //                  [0, 1, 0]  [0, 0, 1]
-  //                  [0, 0, 1]  [0, 1, 0]
-
-  // counter for number of generated nxn chessboards containing n rooks not in conflict
-  let solutionCount = 0;
+  // number of solutions for 1 <= n <= 8: 1, 2, 6, 24, 120, 720, 5040, 40320
+  // e.g., for n = 3: [1, 0, 0]  [0, 0, 1]  [1, 0, 0]  [0, 0, 1]  [0, 1, 0]  [0, 1, 0]
+  //                  [0, 1, 0]  [0, 1, 1]  [0, 0, 1]  [1, 0 ,0]  [1, 0, 0]  [0, 0, 1]
+  //                  [0, 0, 1]  [1, 0, 0]  [0, 1, 0]  [0, 1, 0]  [0, 0, 1]  [1, 0, 0]
 
   // table for maximum number of nxn chessboards that exist that contain n rooks not in conflict
-  const NumSolutions = {
+  const MaxNumSolutions = {
     '1': 1,
-    '2': 1,
-    '3': 2,
-    '4': 6,
-    '5': 24,
-    '6': 120,
-    '7': 720,
-    '8': 5040,
-    '9': 40320
+    '2': 2,
+    '3': 6,
+    '4': 24,
+    '5': 120,
+    '6': 720,
+    '7': 5040,
+    '8': 40320
   };
 
-  // maximum number of unique solutions
-  let numUniqueSolutions = NumSolutions[n];
+  // collection of unique rook solutions
+  let allRookSolutions = [];
 
-  // collection of unique solutions
-  let uniqueSolutions = [];
+  // a n-rook solution
+  let rookSolution;
 
   // generate solutions until all possible solutions have been found:
-  while (solutionCount < numUniqueSolutions) {
-    // (1) generate a solution matrix
-    let oneSolution = findNRooksSolution(n);
-    let oneSolutionVariants = [];
+  while (allRookSolutions.length < MaxNumSolutions[n]) {
 
+    // generate a solution
+    rookSolution = JSON.stringify(findNRooksSolution(n));
 
-    // perform symmetry operations (reflection, rotation) to create solution variants
-    // rotation: 0˚, 90˚, 180˚, 270˚ and 1 reflection for each rotation (8 variants per solution)
-    // rotation(90˚) = top row becomes end column
-    // reflection = top row becomes bottom row
-    let reflection = [];
-    let rotation = [];
-    let symmetryCount = 0;
-
-    // build out rotation matrix
-    for (let i = 0; i < oneSolution.length; i++) {
-      rotation.push([]);
-      for (let j = 0; j < oneSolution.length; j++) {
-        rotation[i].push(0);
-      }
-    }
-
-
-
-    // rotate matrix by 90˚
-    let rotationOperation = function (matrix) {
-      // make a 90˚ rotation on matrix and add to collection of variants
-      for (let j = 0; j < matrix.length; j++) {
-        for (let k = 0; k < matrix[j].length; k++) {
-          rotation[k][matrix.length - (j + 1)] = matrix[j][k];
-        }
-      }
-      oneSolutionVariants.push(JSON.stringify(rotation));
-
-      reflectionOperation(rotation);
-
-      symmetryCount++;
-
-      if (symmetryCount < 3) {
-        rotationOperation(rotation);
-      } else {
-        return;
-      }
-    };
-
-    // reflect matrix
-    let reflectionOperation = function (matrix) {
-      // reflect matrix and add to collection of variants
-      for (let i = matrix.length - 1; i >= 0; i--) {
-        reflection.push(matrix[i]);
-      }
-      oneSolutionVariants.push(JSON.stringify(reflection));
-
-      // reset reflection matrix
-      reflection = [];
-    };
-
-    // add 0˚ rotation to collection of variants
-    oneSolutionVariants.push(JSON.stringify(oneSolution));
-
-    // reflect 0˚ rotation and to collection of variants
-    reflectionOperation(oneSolution);
-
-    // make rotation and reflection variants on original matrix
-    rotationOperation(oneSolution);
-
-
-    // (2) determine if solution has already been generated:
-    let isUnique = true; // trigger to stop comparisons
-    for (let i = 0; i < uniqueSolutions.length; i++) {
-      // get a unique solution
-      let unique = uniqueSolutions[i];
-      if (isUnique) {
-        for (let j = 0; j < oneSolutionVariants.length; j++) {
-          let variant = oneSolutionVariants[j];
-          // stop comparing solution variants when solution not unique
-          if (unique === variant) {
-            isUnique = false;
-            break;
-          }
-        }
-      } else {
-        // stop comparing solution variants when solution not unique
+    // determine if solution has already been generated:
+    let isUnique = true;
+    for (let i = 0; i < allRookSolutions.length; i++) {
+      if (rookSolution === allRookSolutions[i]) {
+        isUnique = false;
         break;
       }
     }
 
-
-    // (3) if solution is unique:
+    // add to collection of unique solutions if solution is unique
     if (isUnique) {
-      // add to collection of unique solutions
-      uniqueSolutions.push(JSON.stringify(oneSolution));
-      // increment counter of unique solutions
-      solutionCount++;
+      allRookSolutions.push(rookSolution);
     }
-
   }
 
-  console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
-  return solutionCount;
+  console.log('Number of solutions for ' + n + ' rooks:', allRookSolutions.length);
+  return allRookSolutions.length;
 };
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
