@@ -50,11 +50,10 @@ window.findNRooksSolution = function(n) {
 };
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
+// version 2: uses tree data structure (takes ~ 1 minute for n = 8)
 window.countNRooksSolutions = function(n) {
-  // number of solutions for 1 <= n <= 8: 1, 2, 6, 24, 120, 720, 5040, 40320
-  // e.g., for n = 3: [1, 0, 0]  [0, 0, 1]  [1, 0, 0]  [0, 0, 1]  [0, 1, 0]  [0, 1, 0]
-  //                  [0, 1, 0]  [0, 1, 1]  [0, 0, 1]  [1, 0 ,0]  [1, 0, 0]  [0, 0, 1]
-  //                  [0, 0, 1]  [1, 0, 0]  [0, 1, 0]  [0, 1, 0]  [0, 0, 1]  [1, 0, 0]
+  // counter for number of found solutions
+  let solutionCount = 0;
 
   // table for maximum number of nxn chessboards that exist that contain n rooks not in conflict
   const MaxNumSolutions = {
@@ -68,35 +67,113 @@ window.countNRooksSolutions = function(n) {
     '8': 40320
   };
 
-  // collection of unique rook solutions
-  let allRookSolutions = [];
+  // a tree to store a collection of 'flattened' matrices
+  // e.g., for n = 3:
+  // matrices:
+  //        [1, 0, 0]  [0, 0, 1]  [1, 0, 0]  [0, 0, 1]  [0, 1, 0]  [0, 1, 0]
+  //        [0, 1, 0]  [0, 1, 0]  [0, 0, 1]  [1, 0 ,0]  [1, 0, 0]  [0, 0, 1]
+  //        [0, 0, 1]  [1, 0, 0]  [0, 1, 0]  [0, 1, 0]  [0, 0, 1]  [1, 0, 0]
+  // 'flattened' matrices:
+  //        [0, 1, 2]  [2, 1, 0]  [0, 2, 1]  [2, 0, 1]  [1, 0, 2]  [1, 2, 0]
+  // tree of 'flattened' matrices
+  //                             [0, 1, 2]
+  //                    [1, 2]     [0, 2]     [0, 1]
+  //               [2]    [1]    [2]    [0]    [1]    [0]
+  //              false  false  false  false  false  false
+  let solutionTree = function (n) {
+    let node = {};
+    node.value = n;
+    node.row = [];
+    _.extend(node, solutionTreeMethods);
+    return node;
+  };
 
-  // a n-rook solution
-  let rookSolution;
-
-  // generate solutions until all possible solutions have been found:
-  while (allRookSolutions.length < MaxNumSolutions[n]) {
-
-    // generate a solution
-    rookSolution = JSON.stringify(findNRooksSolution(n));
-
-    // determine if solution has already been generated:
-    let isUnique = true;
-    for (let i = 0; i < allRookSolutions.length; i++) {
-      if (rookSolution === allRookSolutions[i]) {
-        isUnique = false;
-        break;
+  // solutionTree methods
+  let solutionTreeMethods = {
+    // add new node to tree
+    add: function(n) {
+      this.row.push(solutionTree(n));
+    },
+    // search tree to determine if solution is new
+    isNewSolution: function(colIndices) {
+      let isNewMatrix = false;
+      let iterateNodes = function(node, indices) {
+        // return true if this solution has not been found before, return false if has already been found
+        if (node.row[0].value === false) {
+          node.row[0].value = true;
+          isNewMatrix = true;
+          return;
+        } else {
+          for (let i = 0; i < node.row.length; i++) {
+            if (node.row[i].value === indices[0]) {
+              iterateNodes(node.row[i], indices.slice(1));
+            }
+          }
+        }
+      };
+      iterateNodes(this, colIndices);
+      return isNewMatrix;
+    },
+    // create tree representing all possible n rook solutions
+    build: function(colIndices) {
+      for (let i = 0; i < colIndices.length; i++) {
+        this.add(colIndices[i]);
+        let colArray = colIndices.slice();
+        colArray.splice(i, 1);
+        colArray.length ? this.row[i].build(colArray) : this.row[i].add(false);
       }
     }
+  };
 
-    // add to collection of unique solutions if solution is unique
-    if (isUnique) {
-      allRookSolutions.push(rookSolution);
+  // an array to hold top row nodes of tree
+  let matricesArray = [];
+
+  // create a tree containing all permutations of an nxn board with n rooks not in conflict
+  let nArray = _.range(n);
+  for (let i = 0; i < nArray.length; i++) {
+    // add node to top row of tree with one column index
+    let newNode = solutionTree(nArray[i]);
+    matricesArray.push(newNode);
+    // build out branch with the remaining possible column indices
+    if (nArray.length > 1) {
+      let colArray = nArray.slice();
+      colArray.splice(i, 1);
+      newNode.build(colArray);
+    } else {
+      newNode.add(false);
     }
   }
 
-  console.log('Number of solutions for ' + n + ' rooks:', allRookSolutions.length);
-  return allRookSolutions.length;
+  // repeat until max number of unique matrices are found
+  while (solutionCount < MaxNumSolutions[n]) {
+
+    // generate matrix for a nxn board and n-rooks not in conflict
+    let rookMatrix = findNRooksSolution(n);
+
+    // flatten matrix to an array of n elements where indices are rows and values are column indices
+    // e.g., for n = 3: [0, 1, 0]
+    //                  [1, 0, 0]  =>  [1, 0, 2]
+    //                  [0, 0, 1]
+    let flattenMatrix = [];
+    for (let i = 0; i < rookMatrix.length; i++) {
+      flattenMatrix.push(rookMatrix[i].indexOf(1));
+    }
+
+    // compare to collection of unique matrices
+    for (let i = 0; i < matricesArray.length; i++) {
+      // search tree when 1st row column index of flattened rook matrix matches value of matricesArray node
+      if (matricesArray[i].value === flattenMatrix[0]) {
+        // only one solution is possible for n of 1
+        // OR
+        // remove 1st element (i.e., 1st row column index) from flattenMatrix and search the branch from this node
+        if (matricesArray.length === 1 || matricesArray[i].isNewSolution(flattenMatrix.slice(1))) {
+          // increment number of found solutions if this matrix has not been generated
+          solutionCount++;
+        }
+      }
+    }
+  }
+  return solutionCount;
 };
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
