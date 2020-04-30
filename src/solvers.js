@@ -125,8 +125,49 @@ window.findNQueensSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  // table for maximum number of nxn chessboards that exist that contain n queens not in conflict
+  const MaxNumQueenSolutions = {
+    '0': 1,
+    '1': 1,
+    '2': 0,
+    '3': 0,
+    '4': 2,
+    '5': 10,
+    '6': 4,
+    '7': 40,
+    '8': 92
+  };
 
-  console.log('Number of solutions for ' + n + ' queens:', solutionCount);
-  return solutionCount;
+  //do same as above, but collect NRooks solution sets for n to find NQueens
+  //create count variable set to 0
+  //create solutions array set to empty
+  let allQueenSolutions = [];
+
+  // generate solutions until all possible solutions have been found:
+  while (allQueenSolutions.length < MaxNumQueenSolutions[n]) {
+    // generate a solution
+    let queenSolution = findNRooksSolution(n);
+    let queenBoard = new Board(queenSolution);
+    //check if queens conflict
+    if (!queenBoard.hasAnyQueensConflicts()) {
+      queenSolution = JSON.stringify(queenSolution);
+
+      // determine if solution has already been generated for queens:
+      let isUnique = true;
+      for (let i = 0; i < allQueenSolutions.length; i++) {
+        if (queenSolution === allQueenSolutions[i]) {
+          isUnique = false;
+          break;
+        }
+      }
+      // add to collection of unique solutions if solution is unique
+      if (isUnique) {
+        allQueenSolutions.push(queenSolution);
+      }
+    }
+  }
+
+  console.log('Number of solutions for ' + n + ' queens:', allQueenSolutions.length);
+  //return solutionCount or allQueenSolutions.length
+  return allQueenSolutions.length;
 };
