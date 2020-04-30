@@ -101,8 +101,24 @@ window.countNRooksSolutions = function(n) {
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined; //fixme
+  //get one solution for nxn array/matrix
+  //new board instance w/value {'n': n}
+  let board;
+  //call findNRooksSolution, check if hasAnyQueensConflicts
+  //else if conflict, run findNRooksSolution again, use new solution output
+  //if n doesn't equal 2 or 3, do..while, else return empty board as solution
+  if (n !== 2 && n !== 3) {
+    do {
+      board = new Board(findNRooksSolution(n));
+    } while (board.hasAnyQueensConflicts());
+  } else {
+    board = new Board({n: n});
+  }
+  //if no conflicts, or if n equals 2 or 3, solution found
+  //convert board to matrix w/arrays
+  board = board.rows();
 
+<<<<<<< HEAD
   // create an empty board
   let board = new Board({n: n});
   let matrix = board.rows();
@@ -144,12 +160,58 @@ window.findNQueensSolution = function(n) {
 
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
   return solution;
+=======
+  console.log('Single solution for ' + n + ' queens:', JSON.stringify(board));
+  //return board
+  return board;
+>>>>>>> 68503e1bea7a678da60d84254053a0dfb4593548
 };
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  // table for maximum number of nxn chessboards that exist that contain n queens not in conflict
+  const MaxNumQueenSolutions = {
+    '0': 1,
+    '1': 1,
+    '2': 0,
+    '3': 0,
+    '4': 2,
+    '5': 10,
+    '6': 4,
+    '7': 40,
+    '8': 92
+  };
 
-  console.log('Number of solutions for ' + n + ' queens:', solutionCount);
-  return solutionCount;
+  //do same as above, but collect NRooks solution sets for n to find NQueens
+  //create count variable set to 0
+  //create solutions array set to empty
+  let allQueenSolutions = [];
+
+  // generate solutions until all possible solutions have been found:
+  while (allQueenSolutions.length < MaxNumQueenSolutions[n]) {
+    // generate a solution
+    let queenSolution = findNRooksSolution(n);
+    let queenBoard = new Board(queenSolution);
+    //check if queens conflict
+    if (!queenBoard.hasAnyQueensConflicts()) {
+      queenSolution = JSON.stringify(queenSolution);
+
+      // determine if solution has already been generated for queens:
+      let isUnique = true;
+      for (let i = 0; i < allQueenSolutions.length; i++) {
+        if (queenSolution === allQueenSolutions[i]) {
+          isUnique = false;
+          break;
+        }
+      }
+      // add to collection of unique solutions if solution is unique
+      if (isUnique) {
+        allQueenSolutions.push(queenSolution);
+      }
+    }
+  }
+
+  console.log('Number of solutions for ' + n + ' queens:', allQueenSolutions.length);
+  //return solutionCount or allQueenSolutions.length
+  return allQueenSolutions.length;
 };
