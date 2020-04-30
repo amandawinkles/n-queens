@@ -118,53 +118,9 @@ window.findNQueensSolution = function(n) {
   //convert board to matrix w/arrays
   board = board.rows();
 
-<<<<<<< HEAD
-  // create an empty board
-  let board = new Board({n: n});
-  let matrix = board.rows();
-
-  // togglePiece(rowIndex, colIndex)
-  // hasAnyQueenConflictsOn(rowIndex, colIndex)
-  // _isInBounds(rowIndex, colIndex)
-
-  // iterate over each row
-    // starting at (0, 0) to (0, n - 1)
-    // insert piece at (0, 0)
-    // check for conflicts
-    // if no conflict
-      // if (1, 0) in bounds,
-        // then go to next row (1, 0) - next row
-        // insert at (1, 0)
-        // check for conflicts...
-      // else if no more rows
-        // solution found (?) ...transform board into matrix
-    // else remove piece at (0, 0)
-      // if (0, 1) in bounds
-        // insert at (0, 1) - next col of this row
-        // check for conflicts...
-      // else if not in bounds
-        // go back to previous row
-        // move piece one column over in previous row
-          // check if in bounds...
-          // check for conflicts...
-
-
-
-
-
-
-
-  // for each row
-
-
-
-  console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
-  return solution;
-=======
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(board));
   //return board
   return board;
->>>>>>> 68503e1bea7a678da60d84254053a0dfb4593548
 };
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
