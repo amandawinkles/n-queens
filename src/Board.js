@@ -154,6 +154,26 @@
       //   return true;
       // }
       return count > 1;
+
+      // // get number of rows/cols for this board
+      // let numRows = this.get('n');
+      // let numCols = numRows;
+
+      // // sum values across a major diagonal
+      // let majorIndex = majorDiagonalColumnIndexAtFirstRow; // majorIndex = col_index - row_index
+      // let sum = 0;
+      // // rows = index 'i'; cols = index 'j'
+      // for (let i = 0; i < numRows; i++) {
+      //   for (let j = 0; j < numCols; j++) {
+      //     if (j - i === majorIndex) {
+      //       // get(n) returns an array of length n representing the nth row
+      //       sum += this.get(i)[j];
+      //     }
+      //   }
+      // }
+
+      // // has conflict if major diagonal sums to greater than 1
+      // return sum > 1;
     },
 
     //time complexity for initial implementation: O(n2)
@@ -169,6 +189,21 @@
         }
       }
       return false;
+
+      // // get number of rows/cols for this board
+      // let numRowsCols = this.get('n');
+
+      // // rows = index 'i'; cols = index 'j'
+      // for (let i = 0; i < numRowsCols; i++) {
+      //   for (let j = 0; j < numRowsCols; j++) {
+      //     let majorIndex = j - i; // majorIndex = col_index - row_index
+      //     // has conflict if any major diagonal sums to greater than 1
+      //     if (this.hasMajorDiagonalConflictAt(majorIndex)) {
+      //       return true;
+      //     }
+      //   }
+      // }
+      // return false;
     },
 
     //time complexity for initial implementation: O(n2)
@@ -194,6 +229,24 @@
       //   return true;
       // }
       return count > 1;
+
+      // // get number of rows/cols for this board
+      // let numRowsCols = this.get('n');
+
+      // // sum values across a minor diagonal
+      // let minorIndex = minorDiagonalColumnIndexAtFirstRow; // minorIndex = col_index + row_index
+      // let sum = 0;
+      // // rows = index 'i'; cols = index 'j'
+      // for (let i = 0; i < numRowsCols; i++) {
+      //   for (let j = 0; j < numRowsCols; j++) {
+      //     if (j + i === minorIndex) {
+      //       sum += this.get(i)[j];
+      //     }
+      //   }
+      // }
+
+      // // has conflict if minor diagonal sums to greater than 1
+      // return sum > 1;
     },
 
     //time complexity for initial implementation: O(n2)
@@ -210,6 +263,21 @@
         }
       }
       return false;
+
+    // // get number of rows/cols for this board
+    // let numRowsCols = this.get('n');
+
+    // // rows = index 'i'; cols = index 'j'
+    // for (let i = 0; i < numRowsCols; i++) {
+    //   for (let j = 0; j < numRowsCols; j++) {
+    //     let minorIndex = j + i; // minorIndex = col_index + row_index
+    //     // has conflict if any minor diagonal sums to greater than 1
+    //     if (this.hasMinorDiagonalConflictAt(minorIndex)) {
+    //       return true;
+    //     }
+    //   }
+    // }
+    // return false;
     }
 
     //time complexity for initial implementation: O(n2)
