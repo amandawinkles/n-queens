@@ -19,7 +19,7 @@ window.findNRooksSolution = function(n) {
   // an container array to hold n arrays of n length each
   let solution = [];
 
-  // create and insert into containing array: n arrays of n length containing all 0's (i.e., a blank board)
+  // create and insert into containing array: n arrays of n length containing all 0's (i.e., a blank board) //can create new board instance, then call this.rows()
   for (let i = 0; i < n; i++) {
     let row = new Array(n);
     for (let j = 0; j < n; j++) {
@@ -45,9 +45,11 @@ window.findNRooksSolution = function(n) {
     solution[k][index] = 1;
   }
 
-  console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
+  //console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
   return solution;
 };
+//can use: hasAnyRooksConflicts, togglePiece, backtracking
+//time complexity for initial implementation: O(n2)
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 // version 2: uses tree data structure (takes ~ 1 minute for n = 8)
@@ -176,6 +178,9 @@ window.countNRooksSolutions = function(n) {
   return solutionCount;
 };
 
+//time complexity for initial implementation: O(n2)
+
+
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
   //get one solution for nxn array/matrix
@@ -195,10 +200,13 @@ window.findNQueensSolution = function(n) {
   //convert board to matrix w/arrays
   board = board.rows();
 
-  console.log('Single solution for ' + n + ' queens:', JSON.stringify(board));
+  //console.log('Single solution for ' + n + ' queens:', JSON.stringify(board));
   //return board
   return board;
 };
+
+//time complexity for initial implementation:
+
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
@@ -244,7 +252,9 @@ window.countNQueensSolutions = function(n) {
     }
   }
 
-  console.log('Number of solutions for ' + n + ' queens:', allQueenSolutions.length);
+  //console.log('Number of solutions for ' + n + ' queens:', allQueenSolutions.length);
   //return solutionCount or allQueenSolutions.length
   return allQueenSolutions.length;
 };
+
+//time complexity for initial implementation:

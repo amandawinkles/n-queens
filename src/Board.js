@@ -98,7 +98,7 @@
       return false;
     },
 
-
+    //time complexity: O(n)
 
     // COLUMNS - run from top to bottom
     // --------------------------------------------------------------
@@ -117,6 +117,8 @@
       return sum > 1;
     },
 
+    //time complexity: O(n)
+
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
       // get number of columns for this board
@@ -131,95 +133,87 @@
       return false;
     },
 
-
+    //time complexity: O(n)
 
     // Major Diagonals - go from top-left to bottom-right
     // --------------------------------------------------------------
     //
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
-      // get number of rows/cols for this board
-      let numRows = this.get('n');
-      let numCols = numRows;
-
-      // sum values across a major diagonal
-      let majorIndex = majorDiagonalColumnIndexAtFirstRow; // majorIndex = col_index - row_index
-      let sum = 0;
-      // rows = index 'i'; cols = index 'j'
-      for (let i = 0; i < numRows; i++) {
-        for (let j = 0; j < numCols; j++) {
-          if (j - i === majorIndex) {
-            // get(n) returns an array of length n representing the nth row
-            sum += this.get(i)[j];
-          }
-        }
+      //count set to 0
+      var count = 0;
+      //loop through rows
+      for (var i = 0; i < this.rows().length; i++) {
+        //this.get(i) to get row, check first row index against majorDiagonalColumnIndexAtFirstRow plus 2nd row index, make true or false if truthy/falsey, increment count as incrementing forst row index
+        !!this.get(i)[majorDiagonalColumnIndexAtFirstRow + i] && count++;
+        //increment count
+        //count++;
       }
-
-      // has conflict if major diagonal sums to greater than 1
-      return sum > 1;
+      //if count is more than 1, return true, else return false //return count>1
+      // if (count > 1) {
+      //   return true;
+      // }
+      return count > 1;
     },
+
+    //time complexity for initial implementation: O(n2)
+    //time complexity for final: O(n)
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
-      // get number of rows/cols for this board
-      let numRowsCols = this.get('n');
-
-      // rows = index 'i'; cols = index 'j'
-      for (let i = 0; i < numRowsCols; i++) {
-        for (let j = 0; j < numRowsCols; j++) {
-          let majorIndex = j - i; // majorIndex = col_index - row_index
-          // has conflict if any major diagonal sums to greater than 1
-          if (this.hasMajorDiagonalConflictAt(majorIndex)) {
-            return true;
-          }
+       //loop through this.rows(), but start at -this.rows() length to account for diagonals index at first row spaces off board
+       for (var i = this.rows().length * -1; i < this.rows().length; i++) {
+        //if conflict at i, return true, else return false
+        if (this.hasMajorDiagonalConflictAt(i)) {
+          return true;
         }
       }
       return false;
     },
 
-
+    //time complexity for initial implementation: O(n2)
+    //time complexity for final: O(n)
 
     // Minor Diagonals - go from top-right to bottom-left
     // --------------------------------------------------------------
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
-      // get number of rows/cols for this board
-      let numRowsCols = this.get('n');
-
-      // sum values across a minor diagonal
-      let minorIndex = minorDiagonalColumnIndexAtFirstRow; // minorIndex = col_index + row_index
-      let sum = 0;
-      // rows = index 'i'; cols = index 'j'
-      for (let i = 0; i < numRowsCols; i++) {
-        for (let j = 0; j < numRowsCols; j++) {
-          if (j + i === minorIndex) {
-            sum += this.get(i)[j];
-          }
-        }
+       //same as major, but subtract i from column index @ 1st row
+      //count set to 0
+      var count = 0;
+      //loop through rows
+      for (var i = 0; i < this.rows().length; i++) {
+        //this.get(i) to get row, check first row index against majorDiagonalColumnIndexAtFirstRow plus 2nd row index, make true or false if truthy/falsey, increment count as incrementing forst row index
+        !!this.get(i)[minorDiagonalColumnIndexAtFirstRow - i] && count++;
+        //increment count
+        //count++;
       }
-
-      // has conflict if minor diagonal sums to greater than 1
-      return sum > 1;
+      //if count is more than 1, return true, else return false
+      // if (count > 1) {
+      //   return true;
+      // }
+      return count > 1;
     },
+
+    //time complexity for initial implementation: O(n2)
+    //time complexity for final: O(n)
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
-      // get number of rows/cols for this board
-      let numRowsCols = this.get('n');
-
-      // rows = index 'i'; cols = index 'j'
-      for (let i = 0; i < numRowsCols; i++) {
-        for (let j = 0; j < numRowsCols; j++) {
-          let minorIndex = j + i; // minorIndex = col_index + row_index
-          // has conflict if any minor diagonal sums to greater than 1
-          if (this.hasMinorDiagonalConflictAt(minorIndex)) {
-            return true;
-          }
+      //same as major, but loop starting at this.rows().length * 2 and decrement while looping
+      //loop through this.rows(), but start at -this.rows() length to account for diagonals index at first row spaces off board
+      for (var i = this.rows().length * 2; i > 0; i--) {
+        //if conflict at i, return true, else return false
+        if (this.hasMinorDiagonalConflictAt(i)) {
+          return true;
         }
       }
       return false;
     }
+
+    //time complexity for initial implementation: O(n2)
+    //time complexity for final: O(n)
 
     /*--------------------  End of Helper Functions  ---------------------*/
 
